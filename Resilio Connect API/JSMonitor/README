@@ -31,4 +31,6 @@ client.messages
    })
   .then(message => console.log(message.sid));
 
-5. More instruction here: https://www.twilio.com/docs/sms/quickstart/node#install-nodejs-and-the-twilio-module
+5. Use envirnment variables to store account sid and token, intructions for that here: https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html
+
+6. More general instruction here: https://www.twilio.com/docs/sms/quickstart/node#install-nodejs-and-the-twilio-module
