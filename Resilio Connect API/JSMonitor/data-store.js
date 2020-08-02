@@ -6,20 +6,21 @@ module.exports = {
     getJobProperty,
 };
 
-var agents = {};
-var jobs = {};
+var agents = {},
+    jobs = {},
+    dict = Object.assign({}, agents, jobs);
 
-function setAgentProperty(id, propertyName, value) {
-    if (!agents.hasOwnProperty(id)) {
-        agents[id] = {[propertyName]: value};
+function setAgentProperty(id, propertyName, value,) {
+    if (!dict.hasOwnProperty(id)) {
+        dict[id] = {[propertyName]: value};
     } else {
-        agents[id][propertyName] = value;
+        dict[id][propertyName] = value;
     }
 }
 
 function getAgentProperty(id, propertyName) {
-    if (agents.hasOwnProperty(id) && agents[id].hasOwnProperty(propertyName)) {
-        return agents[id][propertyName];
+    if (dict.hasOwnProperty(id) && dict[id].hasOwnProperty(propertyName)) {
+        return dict[id][propertyName];
     } else {
         throw "No such id or propertyName - " + id + "," + propertyName;
     }
