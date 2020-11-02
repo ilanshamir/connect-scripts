@@ -33,6 +33,9 @@ def startJob(jobID) -> json:
 def getJobs() -> json:
     return getAPIRequest("/api/v2/jobs")
 
+def getJobByID(jobID) -> json:
+    return getAPIRequest("/api/v2/jobs/" + str(jobID))
+
 def getJobsByAttrs(attr1Name, attr1Value, attr2Name = None, attr2Value = None):
     jobs = getAPIRequest("/api/v2/jobs")
     return [obj for obj in jobs if ((obj[attr1Name]==attr1Value) and ((attr2Name==None) or (obj[attr2Name]==attr2Value)))]
@@ -60,7 +63,7 @@ def addSimpleSyncJob(jobName, jobDescription, callbackfunction,
 class jobRunMonitor:
     def __init__(self, runID, finishedCallbackFunction):
         self.monitorJobID = 0
-        self.monitoredRunID = runID
+        self.monitorRunID = runID
         self.monitorJobStatus = ""
         self.monitorErrCode = 200
         self.monitorCallback = finishedCallbackFunction
@@ -72,7 +75,7 @@ class jobRunMonitor:
         return self.monitorErrCode
 
     def updateJobRunStatus(self):
-        runStatus = getJobRunStatus(self.monitoredRunID)
+        runStatus = getJobRunStatus(self.monitorRunID)
         self.monitorJobID = runStatus["job_id"]
         self.monitorJobStatus = runStatus["status"]
         try:
@@ -80,7 +83,7 @@ class jobRunMonitor:
         except:
             self.monitorErrCode = 0
         if (self.monitorJobStatus == "finished"):
-            self.monitorCallback(self.monitorJobID)
+            self.monitorCallback(self.monitorJobID, self.monitorRunID)
 
 class jobsMonitor:
     def __init__(self, monitorInterval):
