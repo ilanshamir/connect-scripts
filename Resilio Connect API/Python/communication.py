@@ -15,7 +15,10 @@ def initializeMCParams(url, port, token):
 
 def getAPIRequest(APIReq) -> json:
     URL = mcURL + ":" + str(mcPort) + APIReq
-    req = requests.get(URL, headers={"Authorization": mcToken})
+    headersData = {
+        "Authorization": mcToken
+    }
+    req = requests.get(URL, headers=headersData)
     return json.loads(req.content)
 
 def postAPIRequest(APIReq, bodyData) -> json:
@@ -28,3 +31,12 @@ def postAPIRequest(APIReq, bodyData) -> json:
     }
     req = requests.post(URL, headers=headersData, data=bodyData)
     return json.loads(req.content)
+
+def deleteAPIRequest(APIReq) -> bool:
+    URL = mcURL + ":" + str(mcPort) + APIReq
+    headersData = {
+        "Authorization": mcToken,
+        "Content-Type": "application/json"
+    }
+    req = requests.delete(URL, headers=headersData)
+    return (req.status_code == 204)

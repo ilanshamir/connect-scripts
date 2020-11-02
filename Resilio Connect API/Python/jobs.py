@@ -4,7 +4,7 @@ import time
 import threading
 
 sys.path.append("./")
-from communication import getAPIRequest, postAPIRequest
+from communication import getAPIRequest, postAPIRequest, deleteAPIRequest
 
 def appendToJobAgentList(list, id, permission, path) -> json:
     list.append({
@@ -34,6 +34,9 @@ def getJobRunID(jobID) -> json:
 
 def getJobRunStatus(runID) -> json:
     return getAPIRequest("/api/v2/runs/" + str(runID))
+
+def deleteJob(jobID) -> json:
+    return deleteAPIRequest("/api/v2/jobs/" + str(jobID))
 
 class jobRunMonitor:
     def __init__(self, runID, finishedCallbackFunction):

@@ -5,10 +5,11 @@ import os
 sys.path.append("./")
 from communication import initializeMCParams, getAPIRequest
 from agents import getAgentList, getAgentByAttrs
-from jobs import appendToJobAgentList, addJob, getJobRunID, startJob, jobsMonitor
+from jobs import appendToJobAgentList, addJob, getJobRunID, startJob, deleteJob, jobsMonitor
 
 def doSomethingWhenJobIsDone(jobID):
     print("function called after the Job " + str(jobID) + " was done")
+    deleteJob(jobID)
 
 def addSimpleSyncJob(jobName, jobDescription, callbackfunction,
                     agent1IP, agent1Name, agent1Permission, agent1Folder,
