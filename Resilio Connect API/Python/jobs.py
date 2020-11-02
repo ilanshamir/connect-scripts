@@ -5,6 +5,7 @@ import threading
 
 sys.path.append("./")
 from communication import getAPIRequest, postAPIRequest, deleteAPIRequest
+from agents import getAgentByAttrs
 
 def appendToJobAgentList(list, id, permission, path) -> json:
     list.append({
@@ -29,6 +30,9 @@ def startJob(jobID) -> json:
     }
     return postAPIRequest("/api/v2/runs", jobInfo)
 
+def getJobs() -> json:
+    return getAPIRequest("/api/v2/jobs")
+
 def getJobRunID(jobID) -> json:
     return getAPIRequest("/api/v2/runs?job_id=" + str(jobID))
 
@@ -37,6 +41,17 @@ def getJobRunStatus(runID) -> json:
 
 def deleteJob(jobID) -> json:
     return deleteAPIRequest("/api/v2/jobs/" + str(jobID))
+
+def addSimpleSyncJob(jobName, jobDescription, callbackfunction,
+                    agent1IP, agent1Name, agent1Permission, agent1Folder,
+                    agent2IP, agent2Name, agent2Permission, agent2Folder,
+                    myJobsMonitor):
+    jobAgentList = []
+    jobAgentList = appendToJobAgentList(jobAgentList, getAgentByAttrs("ip", agent1IP, "name", agent1Name)[0]['id'], agent1Permission, agent1Folder)   
+    jobAgentList = appendToJobAgentList(jobAgentList, getAgentByAttrs("ip", agent2IP, "name", agent2Name)[0]['id'], agent2Permission, agent2Folder)   
+    newJob = addJob(jobName, jobDescription, "sync", jobAgentList)
+    newJobRunID = getJobRunID(newJob['id'])
+    myJobsMonitor.addMonitoredJob(newJobRunID['data'][0]['id'], callbackfunction)
 
 class jobRunMonitor:
     def __init__(self, runID, finishedCallbackFunction):
