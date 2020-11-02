@@ -33,6 +33,10 @@ def startJob(jobID) -> json:
 def getJobs() -> json:
     return getAPIRequest("/api/v2/jobs")
 
+def getJobsByAttrs(attr1Name, attr1Value, attr2Name = None, attr2Value = None):
+    jobs = getAPIRequest("/api/v2/jobs")
+    return [obj for obj in jobs if ((obj[attr1Name]==attr1Value) and ((attr2Name==None) or (obj[attr2Name]==attr2Value)))]
+
 def getJobRunID(jobID) -> json:
     return getAPIRequest("/api/v2/runs?job_id=" + str(jobID))
 
