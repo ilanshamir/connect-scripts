@@ -1,6 +1,7 @@
 import sys
 import json
 import time
+import threading
 
 sys.path.append("./")
 from communication import getAPIRequest, postAPIRequest
@@ -28,10 +29,13 @@ def startJob(jobID) -> json:
     }
     return postAPIRequest("/api/v2/runs", jobInfo)
 
+def getJobRunID(jobID) -> json:
+    return getAPIRequest("/api/v2/runs?job_id=" + str(jobID))
+
 def getJobRunStatus(runID) -> json:
     return getAPIRequest("/api/v2/runs/" + str(runID))
 
-class jobMonitor:
+class jobRunMonitor:
     def __init__(self, runID, finishedCallbackFunction):
         self.monitorJobID = 0
         self.monitoredRunID = runID
@@ -56,16 +60,27 @@ class jobMonitor:
         if (self.monitorJobStatus == "finished"):
             self.monitorCallback(self.monitorJobID)
 
-jobRuns = {}
+class jobsMonitor:
+    def __init__(self, monitorInterval):
+        self.monitorInterval = monitorInterval
+        self.jobRuns = {}
+        self.jobRunsLock = threading.Lock()
+        threading.Thread(target=self.jobMonitorThread).start()  # , daemon=True
 
-def monitorJob(runID, finishedCallbackFunction, monitorInterval):
-    if (not runID in jobRuns):
-        # new job run to monitor
-        jobRuns[runID] = jobMonitor(runID, finishedCallbackFunction)
+    def addMonitoredJob(self, runID, finishedCallbackFunction):
+        with self.jobRunsLock:
+            if (not runID in self.jobRuns):
+                # new job run to monitor
+                self.jobRuns[runID] = jobRunMonitor(runID, finishedCallbackFunction)
 
-    while ((jobRuns[runID].getJobStatus() != "finished") and (jobRuns[runID].getErrCode != 404)):
-        # this should become multi-threaded to monitor several jobs
-        time.sleep(monitorInterval)
-        jobRuns[runID].updateJobRunStatus()
-    # remove from the jobRuns dict
-    jobRuns.pop(runID, None)
+    def jobMonitorThread(self):
+        while (True):
+            with self.jobRunsLock:
+                ids = list(self.jobRuns.keys())
+                for runID in ids:
+                    if ((self.jobRuns[runID].getJobStatus() != "finished") and (self.jobRuns[runID].getErrCode != 404)):        
+                        self.jobRuns[runID].updateJobRunStatus()
+                    else: 
+                        self.jobRuns.pop(runID, None)
+            time.sleep(self.monitorInterval)
+        
