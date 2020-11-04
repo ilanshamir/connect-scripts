@@ -1,10 +1,10 @@
-"jobName", "jobDescription", "ip1", "name1", "permission1", "folder1", "ip2", "name2", "permission2", "folder2"
-"Sync Job 10", "", "54.183.123.123", "Server 1", "rw", "/tmp/v10", "54.183.123.123", "Server 2", "ro", "/tmp/v101"
-"Sync Job 11", "", "54.183.123.123", "Server 1", "rw", "/tmp/v11", "54.183.123.123", "Server 2", "ro", "/tmp/v111"
-"Sync Job 12", "", "54.183.123.123", "Server 1", "rw", "/tmp/v12", "54.183.123.123", "Server 2", "ro", "/tmp/v112"
-"Sync Job 13", "", "54.183.123.123", "Server 1", "rw", "/tmp/v13", "54.183.123.123", "Server 2", "ro", "/tmp/v113"
-"Sync Job 14", "", "54.183.123.123", "Server 1", "rw", "/tmp/v14", "54.183.123.123", "Server 2", "ro", "/tmp/v114"
-"Sync Job 15", "", "54.183.123.123", "Server 1", "rw", "/tmp/v15", "54.183.123.123", "Server 2", "ro", "/tmp/v115"
-"Sync Job 16", "", "54.183.123.123", "Server 1", "rw", "/tmp/v16", "54.183.123.123", "Server 2", "ro", "/tmp/v116"
-"Sync Job 17", "", "54.183.123.123", "Server 1", "rw", "/tmp/v17", "54.183.123.123", "Server 2", "ro", "/tmp/v117"
-"Sync Job 18", "", "54.183.123.123", "Server 1", "rw", "/tmp/v18", "54.183.123.123", "Server 2", "ro", "/tmp/v118"
+jobName,jobDescription,ip1,name1,permission1,folder1,ip2,name2,permission2,folder2,completed
+Sync Job 10,,54.183.114.75,Server 1,rw,/tmp/v10,54.183.114.75,Server 2,ro,/tmp/v101,y
+Sync Job 11,,54.183.114.75,Server 1,rw,/tmp/v11,54.183.114.75,Server 2,ro,/tmp/v111,y
+Sync Job 12,,54.183.114.75,Server 1,rw,/tmp/v12,54.183.114.75,Server 2,ro,/tmp/v112,y
+Sync Job 13,,54.183.114.75,Server 1,rw,/tmp/v13,54.183.114.75,Server 2,ro,/tmp/v113,y
+Sync Job 14,,54.183.114.75,Server 1,rw,/tmp/v14,54.183.114.75,Server 2,ro,/tmp/v114,y
+Sync Job 15,,54.183.114.75,Server 1,rw,/tmp/v15,54.183.114.75,Server 2,ro,/tmp/v115,y
+Sync Job 16,,54.183.114.75,Server 1,rw,/tmp/v16,54.183.114.75,Server 2,ro,/tmp/v116,y
+Sync Job 17,,54.183.114.75,Server 1,rw,/tmp/v17,54.183.114.75,Server 2,ro,/tmp/v117,y
+Sync Job 18,,54.183.114.75,Server 1,rw,/tmp/v18,54.183.114.75,Server 2,ro,/tmp/v118,y

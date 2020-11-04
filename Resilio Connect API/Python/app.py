@@ -34,6 +34,7 @@ myJobsMonitor = jobsMonitor(10)
 agents = getAgentList()
 
 # start jobs based on a csv
+# TO DO: change this to take command line arguments for csv file name, how many jobs, mc url, auth token
 csvJobs = jobsFromCSV("./sampleJobs.csv", myJobsMonitor, doSomethingWhenJobIsDone, 4, 10)
 
 
