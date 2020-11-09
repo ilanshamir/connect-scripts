@@ -2,8 +2,9 @@ import csv
 import time
 import threading
 import logging
+import os
 
-from jobs import addSimpleSyncJob, getJobs, getJobsByAttrs, getJobRunID, getJobByID
+from ..jobs.jobs import addSimpleSyncJob, getJobs, getJobsByAttrs, getJobRunID, getJobByID
 
 class jobsFromCSV:
     def __init__(self, csvFileName, jobsMonitor, callbackFunction, concurrentJobsCount, monitorInterval):
@@ -24,14 +25,18 @@ class jobsFromCSV:
         threading.Thread(target=self.jobCreationThread).start()
 
     def readCSV(self):
-        with open(self.csvFileName, "r") as file:
-            csvReader = csv.DictReader(file, skipinitialspace=True)
-            i = 0
-            for row in csvReader:
-                self.jobsList.append(row)
-                self.jobDict[row['jobName']] = i
-                i += 1
-            print(self.jobsList)
+        try:
+            with open(self.csvFileName, "r") as file:
+                csvReader = csv.DictReader(file, skipinitialspace=True)
+                i = 0
+                for row in csvReader:
+                    self.jobsList.append(row)
+                    self.jobDict[row['jobName']] = i
+                    i += 1
+                print(self.jobsList)
+        except:
+            print("failed to read the csv file: '" + self.csvFileName + "'")
+            os._exit(1)
 
     def updateCSV(self):
         with open(self.csvFileName, 'w') as csvfile:  
@@ -42,20 +47,24 @@ class jobsFromCSV:
 
     def addNextJob(self):
         if (self.nextJob < len(self.jobsList)):
-            addSimpleSyncJob(
-                self.jobsList[self.nextJob]['jobName'],
-                self.jobsList[self.nextJob]['jobDescription'],
-                self.jobCompletedCallback,
-                self.jobsList[self.nextJob]['ip1'],
-                self.jobsList[self.nextJob]['name1'],
-                self.jobsList[self.nextJob]['permission1'],
-                self.jobsList[self.nextJob]['folder1'],
-                self.jobsList[self.nextJob]['ip2'],
-                self.jobsList[self.nextJob]['name2'],
-                self.jobsList[self.nextJob]['permission2'],
-                self.jobsList[self.nextJob]['folder2'],
-                self.jobsMonitor
-                )
+            try:
+                addSimpleSyncJob(
+                    self.jobsList[self.nextJob]['jobName'],
+                    self.jobsList[self.nextJob]['jobDescription'],
+                    self.jobCompletedCallback,
+                    self.jobsList[self.nextJob]['ip1'],
+                    self.jobsList[self.nextJob]['name1'],
+                    self.jobsList[self.nextJob]['permission1'],
+                    self.jobsList[self.nextJob]['folder1'],
+                    self.jobsList[self.nextJob]['ip2'],
+                    self.jobsList[self.nextJob]['name2'],
+                    self.jobsList[self.nextJob]['permission2'],
+                    self.jobsList[self.nextJob]['folder2'],
+                    self.jobsMonitor
+                    )
+            except:
+                print("failed to add job " + self.jobsList[self.nextJob])
+                logging.error("failed to add job " + self.jobsList[self.nextJob])
             self.nextJob += 1
 
     def handleExistingJob(self, jobExists):

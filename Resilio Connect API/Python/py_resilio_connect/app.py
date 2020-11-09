@@ -1,21 +1,31 @@
 import sys
+import os
 import json
 import os
 import logging
 import getopt
+from signal import signal, SIGINT
 
-sys.path.append("./")
-from communication import initializeMCParams, getAPIRequest
-from agents import getAgentList, getAgentByAttrs
-from jobs import appendToJobAgentList, addJob, getJobRunID, startJob, deleteJob, jobsMonitor, addSimpleSyncJob, getJobRunStatus, getJobByID
-from jobs_from_csv import jobsFromCSV
 
+#sys.path.append("./") 
+from .communication.communication import initializeMCParams, getAPIRequest
+from .agents.agents import getAgentList, getAgentByAttrs
+from .jobs.jobs import appendToJobAgentList, addJob, getJobRunID, startJob, deleteJob, jobsMonitor, addSimpleSyncJob, getJobRunStatus, getJobByID
+from .jobs_from_csv.jobs_from_csv import jobsFromCSV
+ 
 # default values
 csvFileName = "./jobs.csv"
 mcURL = os.getenv('RESILIO_MC_URL')
 mcAuth = os.getenv('RESILIO_AUTH_TOKEN')
-jobCount = 4
-logFile = "./pymc.log"
+jobCount = 4 
+logFile = "./pymc.log" 
+verifySSL = True
+
+# ctrl-c handler
+def handler(signal_received, frame):
+    # Handle any cleanup here
+    print('SIGINT or CTRL-C detected. Exiting gracefully')
+    os._exit(1)
 
 def doSomethingWhenJobIsDone(jobID, runID):
     print("function called after the Job " + str(jobID) + " was done")
@@ -33,9 +43,10 @@ def getArgs():
     global mcAuth
     global jobCount
     global logFile
+    global verifySSL
     argumentList = sys.argv[1:]
-    options = "c:j:m:a:o:h"
-    long_options = ["csvfile", "jobcount", "mcaddress", "authtoken", "output", "help"]
+    options = "c:j:m:a:o:nh"
+    long_options = ["csvfile", "jobcount", "mcaddress", "authtoken", "output", "help", "nosslverification"]
 
     try:
         arguments, values = getopt.getopt(argumentList, options, long_options)
@@ -50,41 +61,39 @@ def getArgs():
                 mcAuth = currentValue
             elif currentArgument in ("-o", "--output"):
                 logFile = currentValue
+            elif currentArgument in ("-n", "--nosslverification"):
+                verifySSL = False
+                import urllib3
+                urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
             elif currentArgument in ("-h", "--help"):
                 print ("Diplaying Help")
     except getopt.error as err:
         # output error, and return with an error code
         sys.exit(str(err))
 
-# read the command line args
-getArgs()
+def main():
+    # exit on ctrl-c
+    signal(SIGINT, handler)
 
-# configure a log file
-logging.basicConfig(filename=logFile, filemode='a', level=logging.INFO)
+    # read the command line args
+    getArgs()
 
-# initialize MC
-initializeMCParams(mcURL, 8443, mcAuth)
+    # configure a log file
+    logging.basicConfig(filename=logFile, filemode='a', level=logging.INFO)
 
-# quick test that we can actually connect to this Management Console
-print(getAPIRequest("/api/v2/info"))
+    # initialize MC
+    initializeMCParams(mcURL, 8443, mcAuth, verifySSL)
 
-# start the job monitor
-myJobsMonitor = jobsMonitor(10)
+    # quick test that we can actually connect to this Management Console
+    print(getAPIRequest("/api/v2/info"))
 
-# get the list of agents
-agents = getAgentList()
+    # start the job monitor
+    myJobsMonitor = jobsMonitor(10)
 
-# start jobs based on a csv
-csvJobs = jobsFromCSV(csvFileName, myJobsMonitor, doSomethingWhenJobIsDone, jobCount, 10)
+    # get the list of agents
+    getAgentList()
 
+    # start jobs based on a csv
+    jobsFromCSV(csvFileName, myJobsMonitor, doSomethingWhenJobIsDone, jobCount, 10)
 
-"""
-# add a job
-addSimpleSyncJob("Sync Job 1", "", doSomethingWhenJobIsDone,
-            "54.183.114.75", "Server 1", "rw", "/tmp/v2",
-            "54.183.114.75", "Server 2", "ro", "/tmp/v21")
-"""
-
-
-
-
+main()
